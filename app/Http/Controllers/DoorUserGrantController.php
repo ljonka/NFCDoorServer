@@ -7,6 +7,11 @@ use Illuminate\Http\Request;
 
 class DoorUserGrantController extends Controller
 {
+
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
     /**
      * Display a listing of the resource.
      *
@@ -14,7 +19,7 @@ class DoorUserGrantController extends Controller
      */
     public function index()
     {
-        return DoorUserGrant::all();
+        return view('doorUserGrants.index', ['elements' => DoorUserGrant::all()]);
     }
 
     /**

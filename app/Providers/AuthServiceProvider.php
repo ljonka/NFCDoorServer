@@ -35,5 +35,6 @@ class AuthServiceProvider extends ServiceProvider
             'read-grants' => 'Read grants',
             'create-logs' => 'Create logs'
         ]);
+
     }
 }

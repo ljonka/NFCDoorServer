@@ -8350,3 +8350,16 @@ button.close {
   }
 }
 
+.edit-remove form {
+  float: right;
+}
+
+.api-key {
+  overflow: hidden;
+  padding-right: 10px;
+}
+
+.panel-default > .panel-heading {
+  background-color: lightgray;
+}
+

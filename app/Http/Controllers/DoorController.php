@@ -4,17 +4,26 @@ namespace App\Http\Controllers;
 
 use App\Door;
 use Illuminate\Http\Request;
+use Kris\LaravelFormBuilder\FormBuilder;
+use Kris\LaravelFormBuilder\FormBuilderTrait;
 
 class DoorController extends Controller
 {
+
+    use FormBuilderTrait;
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
+
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        return Door::all();
+        return view('doors.index', ['elements' => Door::all()]);
     }
 
     /**
@@ -22,9 +31,13 @@ class DoorController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function create(FormBuilder $formBuilder)
     {
-        //
+        $form = $formBuilder->create('App\Forms\DoorForm', [
+            'method' => 'POST',
+            'url' => action('DoorController@store')
+        ]);
+        return view('doors.create', compact('form'));
     }
 
     /**
@@ -35,7 +48,11 @@ class DoorController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $door = new Door($request->all());
+        $door->api_key = $request->user()->createToken($door->name)->accessToken;
+        $door->save();
+        $request->session()->flash('status', 'Tür \''.$door->name.'\' wurde hinzugefügt.');
+        return redirect(action('DoorController@show', $door->id));
     }
 
     /**
@@ -46,7 +63,7 @@ class DoorController extends Controller
      */
     public function show(Door $door)
     {
-        //
+        return view('doors.show', ['door' => $door]);
     }
 
     /**
@@ -57,7 +74,12 @@ class DoorController extends Controller
      */
     public function edit(Door $door)
     {
-        //
+        $form = $this->form('App\Forms\DoorForm', [
+            'method' => 'PATCH',
+            'url' => action('DoorController@update', $door->id),
+            'model' => $door
+        ]);
+        return view('doors.edit', compact('form'));
     }
 
     /**
@@ -69,7 +91,10 @@ class DoorController extends Controller
      */
     public function update(Request $request, Door $door)
     {
-        //
+        $door->fill($request->all());
+        $door->save();
+        $request->session()->flash('status', '\''.$door->name.'\' wurde aktualisiert.');
+        return redirect(action('DoorController@show', $door->id));
     }
 
     /**
@@ -78,8 +103,10 @@ class DoorController extends Controller
      * @param  \App\Door  $door
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Door $door)
+    public function destroy(Request $request, Door $door)
     {
-        //
+        $request->session()->flash('status', 'Die Tür \''.$door->name.'\' wurde entfernt.');
+        $door->delete();
+        return redirect(action('DoorController@index'));
     }
 }

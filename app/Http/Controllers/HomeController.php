@@ -24,7 +24,16 @@ class HomeController extends Controller
      */
     public function index()
     {
-        return view('home');
+        return view('home', ['userCount' => User::all()->count()]);
+    }
+    /**
+     * Show the application dashboard.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function welcome()
+    {
+        return view('welcome', ['userCount' => User::all()->count()]);
     }
 
     /**

@@ -4,9 +4,16 @@ namespace App\Http\Controllers;
 
 use App\DoorUser;
 use Illuminate\Http\Request;
+use Kris\LaravelFormBuilder\FormBuilder;
+use Kris\LaravelFormBuilder\FormBuilderTrait;
 
 class DoorUserController extends Controller
 {
+    use FormBuilderTrait;
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
     /**
      * Display a listing of the resource.
      *
@@ -14,7 +21,7 @@ class DoorUserController extends Controller
      */
     public function index()
     {
-        return DoorUser::all();
+        return view('doorUsers.index', ['elements' => DoorUser::all()]);
     }
 
     /**
@@ -22,9 +29,13 @@ class DoorUserController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function create(FormBuilder $formBuilder)
     {
-        //
+        $form = $formBuilder->create('App\Forms\DoorUserForm', [
+            'method' => 'POST',
+            'url' => action('DoorUserController@store')
+        ]);
+        return view('doorUsers.create', compact('form'));
     }
 
     /**
@@ -35,7 +46,10 @@ class DoorUserController extends Controller
      */
     public function store(Request $request)
     {
-        //
+      $person = new DoorUser($request->all());
+      $person->save();
+      $request->session()->flash('status', '\''.$person->name.'\' wurde hinzugefügt.');
+      return redirect(action('DoorUserController@show', $person->id));
     }
 
     /**
@@ -46,7 +60,7 @@ class DoorUserController extends Controller
      */
     public function show(DoorUser $doorUser)
     {
-        //
+        return view('doorUsers.show', ['doorUser' => $doorUser]);
     }
 
     /**
@@ -57,7 +71,12 @@ class DoorUserController extends Controller
      */
     public function edit(DoorUser $doorUser)
     {
-        //
+      $form = $this->form('App\Forms\DoorUserForm', [
+          'method' => 'PATCH',
+          'url' => action('DoorUserController@update', $doorUser->id),
+          'model' => $doorUser
+      ]);
+      return view('doorUsers.edit', compact('form'));
     }
 
     /**
@@ -69,7 +88,10 @@ class DoorUserController extends Controller
      */
     public function update(Request $request, DoorUser $doorUser)
     {
-        //
+      $doorUser->fill($request->all());
+      $doorUser->save();
+      $request->session()->flash('status', '\''.$doorUser->name.'\' wurde aktualisiert.');
+      return redirect(action('DoorUserController@show', $doorUser->id));
     }
 
     /**
@@ -78,8 +100,10 @@ class DoorUserController extends Controller
      * @param  \App\DoorUser  $doorUser
      * @return \Illuminate\Http\Response
      */
-    public function destroy(DoorUser $doorUser)
+    public function destroy(Request $request, DoorUser $doorUser)
     {
-        //
+      $request->session()->flash('status', '\''.$doorUser->name.'\' wurde entfernt.');
+      $doorUser->delete();
+      return redirect(action('DoorUserController@index'));
     }
 }
