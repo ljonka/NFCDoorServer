@@ -5,7 +5,7 @@
     <div class="row">
         <div class="col-md-8 col-md-offset-2">
             <div class="panel panel-default">
-                <div class="panel-heading">Verlauf</div>
+                <div class="panel-heading">Aktivitäten</div>
 
                 <div class="panel-body">
                     @if (session('status'))
@@ -14,14 +14,22 @@
                         </div>
                     @endif
 
-                    <div class="form-group">
-                    <a href="{{action('LogController@create')}}"
-                      class="btn btn-success" role="button">hinzufügen</a>
-                    </div>
-
                     <div class="list-group">
                       @foreach($elements as $element)
-                      <a href="#" class="list-group-item">{{ $element->name }}</a>
+                      <div class="list-group-item">
+                        {{--
+                        @php
+                          $arrData = json_decode($element->data)
+                        @endphp
+                        <ul>
+                          <li><b>Timestamp: </b> {{$element->created_at}}</li>
+                        @foreach($arrData as $key => $val)
+                          <li><b>{{$key}}: </b>{{$val}}</li>
+                        @endforeach
+                        </ul>
+                        --}}
+                        {{$element->data}}
+                      </div>
                       @endforeach
                     </div>
 

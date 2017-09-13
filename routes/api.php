@@ -18,11 +18,6 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 });
 
 Route::group(['middleware' => ['auth:api']], function () {
-    Route::get('users', 'HomeController@users');
-
-    Route::resource('doors', 'DoorController');
-    Route::resource('doorusers', 'DoorUserController');
-    Route::resource('doorusergrants', 'DoorUserGrantController');
+    Route::resource('doorUserGrants', 'DoorUserGrantController');
     Route::resource('logs', 'LogController');
-    Route::resource('managers', 'ManagerController');
 });

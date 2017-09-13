@@ -14,11 +14,6 @@
                         </div>
                     @endif
 
-                    <div class="form-group">
-                    <a href="{{action('DoorUserGrantController@create')}}"
-                      class="btn btn-success" role="button">hinzufügen</a>
-                    </div>
-
                     <div class="list-group">
                       @foreach($elements as $element)
                       <a href="#" class="list-group-item">{{ $element->name }}</a>

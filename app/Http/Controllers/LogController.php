@@ -40,7 +40,7 @@ class LogController extends Controller
      */
     public function store(Request $request)
     {
-        //
+      return Log::create($request->all());
     }
 
     /**

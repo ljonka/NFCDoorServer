@@ -48,8 +48,7 @@
                         @else
                             <li><a href="{{ action('DoorController@index') }}">Türen</a></li>
                             <li><a href="{{ action('DoorUserController@index') }}">Personen</a></li>
-                            <li><a href="{{ action('DoorUserGrantController@index') }}">Berechtigungen</a></li>
-                            <li><a href="{{ action('LogController@index') }}">Verlauf</a></li>
+                            <li><a href="{{ action('LogController@index') }}">Aktivitäten</a></li>
                             <li class="dropdown">
                                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
                                     {{ Auth::user()->name }} <span class="caret"></span>

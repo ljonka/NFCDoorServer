@@ -19,7 +19,7 @@ class DoorUserGrantController extends Controller
      */
     public function index()
     {
-        return view('doorUserGrants.index', ['elements' => DoorUserGrant::all()]);
+        return ['elements' => DoorUserGrant::all()];
     }
 
     /**
