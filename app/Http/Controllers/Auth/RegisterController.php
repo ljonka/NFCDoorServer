@@ -92,6 +92,7 @@ class RegisterController extends Controller
         // Creating a token without scopes...
         //$token = $user->createToken('Login')->accessToken;
         //return ["user" => $user, "token" => $token];
+        return redirect($this->redirectTo);
     }
 
 }

@@ -2,10 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Door;
 use App\DoorUser;
+use App\DoorUserGrant;
+use App\Log;
 use Illuminate\Http\Request;
 use Kris\LaravelFormBuilder\FormBuilder;
 use Kris\LaravelFormBuilder\FormBuilderTrait;
+use Illuminate\Support\Facades\DB;
 
 class DoorUserController extends Controller
 {
@@ -21,7 +25,18 @@ class DoorUserController extends Controller
      */
     public function index()
     {
-        return view('doorUsers.index', ['elements' => DoorUser::all()]);
+        //lookup unassigned uuid's in log
+        $logs = DB::table('logs')
+            ->select('logs.chip_uuid', 'logs.data', 'logs.created_at')
+            ->groupBy('logs.chip_uuid')
+            ->latest('logs.created_at')
+            ->leftJoin('door_users', 'logs.chip_uuid', '=', 'door_users.chip_uuid')
+            ->whereNull('door_users.chip_uuid')
+            ->get();
+        return view('doorUsers.index', [
+          'elements' => DoorUser::all(),
+          'logs' => $logs
+        ]);
     }
 
     /**
@@ -35,6 +50,7 @@ class DoorUserController extends Controller
             'method' => 'POST',
             'url' => action('DoorUserController@store')
         ]);
+
         return view('doorUsers.create', compact('form'));
     }
 
@@ -48,6 +64,29 @@ class DoorUserController extends Controller
     {
       $person = new DoorUser($request->all());
       $person->save();
+
+      $doors = Door::all();
+      $permissions = $request->input('permissions');
+      if(is_array($permissions)){
+        foreach($doors as $door){
+          //check input for each door, if false, nothing given so assume false
+          //find grant for user door combi
+          $grant = DoorUserGrant::where([
+            ['door_user', '=', $person->id],
+            ['door', '=', $door->id]
+          ])->first();
+          if(in_array($door->id, $permissions)){
+            if($grant == null){
+              DoorUserGrant::create([
+                'door_user' => $person->id,
+                'door' => $door->id,
+                'grants' => '{}'
+              ]);
+            }
+          }
+        }
+      }
+
       $request->session()->flash('status', '\''.$person->name.'\' wurde hinzugefügt.');
       return redirect(action('DoorUserController@show', $person->id));
     }
@@ -60,7 +99,9 @@ class DoorUserController extends Controller
      */
     public function show(DoorUser $doorUser)
     {
-        return view('doorUsers.show', ['doorUser' => $doorUser]);
+        $grants = DoorUserGrant::where('door_user', '=', $doorUser->id)->get();
+
+        return view('doorUsers.show', ['doorUser' => $doorUser, 'grants' => $grants]);
     }
 
     /**
@@ -75,7 +116,7 @@ class DoorUserController extends Controller
           'method' => 'PATCH',
           'url' => action('DoorUserController@update', $doorUser->id),
           'model' => $doorUser
-      ]);
+      ], ['user' => $doorUser]);
       return view('doorUsers.edit', compact('form'));
     }
 
@@ -90,6 +131,30 @@ class DoorUserController extends Controller
     {
       $doorUser->fill($request->all());
       $doorUser->save();
+
+      $doors = Door::all();
+      $permissions = $request->input('permissions');
+
+        foreach($doors as $door){
+          //check input for each door, if false, nothing given so assume false
+          //find grant for user door combi
+          $grant = DoorUserGrant::where([
+            ['door_user', '=', $doorUser->id],
+            ['door', '=', $door->id]
+          ])->first();
+          if(is_array($permissions) && in_array($door->id, $permissions)){
+            if($grant == null){
+              DoorUserGrant::create([
+                'door_user' => $doorUser->id,
+                'door' => $door->id,
+                'grants' => '{}'
+              ]);
+            }
+          }else if($grant !== null){
+              $grant->delete();
+          }
+        }
+
       $request->session()->flash('status', '\''.$doorUser->name.'\' wurde aktualisiert.');
       return redirect(action('DoorUserController@show', $doorUser->id));
     }
@@ -103,6 +168,10 @@ class DoorUserController extends Controller
     public function destroy(Request $request, DoorUser $doorUser)
     {
       $request->session()->flash('status', '\''.$doorUser->name.'\' wurde entfernt.');
+      $grants = DoorUserGrant::where('door_user', '=', $doorUser->id)->get();
+      foreach($grants as $grant){
+        $grant->delete();
+      }
       $doorUser->delete();
       return redirect(action('DoorUserController@index'));
     }

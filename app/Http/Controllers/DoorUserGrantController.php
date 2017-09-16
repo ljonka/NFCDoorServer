@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Door;
 use App\DoorUserGrant;
 use Illuminate\Http\Request;
 
@@ -17,9 +18,25 @@ class DoorUserGrantController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        return ['elements' => DoorUserGrant::all()];
+        $grants = DoorUserGrant::all();
+
+        $controllerGrants = [];
+
+        //get request token
+
+        $token = $request->user()->token();
+
+        $door = Door::where('name', '=', $token->name)->first();
+
+        foreach($grants as $grant){
+          if($door->id == $grant->door){
+            $controllerGrants[$grant->userModel()->chip_uuid] = 1;
+          }
+        }
+
+        return ['permissions' => $controllerGrants];
     }
 
     /**

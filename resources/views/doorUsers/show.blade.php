@@ -28,6 +28,18 @@
                       <div class="panel-body">{{$doorUser->chip_uuid}}</div>
                     </div>
                     <div class="panel panel-default">
+                      <div class="panel-heading">Grants</div>
+                      <div class="panel-body">
+                        <ul>
+                        @foreach($grants as $grant)
+                          <li>
+                            {{$grant->doorModel()->name}}
+                          </li>
+                        @endforeach
+                        </ul>
+                      </div>
+                    </div>
+                    <div class="panel panel-default">
                       <div class="panel-heading">Name</div>
                       <div class="panel-body">{{$doorUser->name}}</div>
                     </div>

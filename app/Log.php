@@ -6,5 +6,5 @@ use Illuminate\Database\Eloquent\Model;
 
 class Log extends Model
 {
-    protected $fillable = ["data"];
+    protected $fillable = ["chip_uuid", "data"];
 }

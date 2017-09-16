@@ -13,7 +13,7 @@
 
 use App\User;
 
-Route::get('/', 'HomeController@welcome');
+Route::get('/', 'HomeController@index');
 
 Auth::routes();
 
