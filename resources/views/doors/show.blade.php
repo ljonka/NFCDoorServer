@@ -17,11 +17,12 @@
                     <div class="form-group edit-remove">
                         <a href="{{action('DoorController@edit', $door->id)}}"
                           class="btn btn-primary" role="button">bearbeiten</a>
-
+                          {{--
                         {{Form::open(['method'  => 'DELETE', 'action' =>
                           ['DoorController@destroy', $door->id]])}}
                           <button type="submit" class="btn btn-danger">entfernen</button>
                         {{Form::close()}}
+                        --}}
                     </div>
 
                     <div class="panel panel-default">

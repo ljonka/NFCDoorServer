@@ -105,8 +105,8 @@ class DoorController extends Controller
      */
     public function destroy(Request $request, Door $door)
     {
-        $request->session()->flash('status', 'Die Tür \''.$door->name.'\' wurde entfernt.');
-        $door->delete();
+        //$request->session()->flash('status', 'Die Tür \''.$door->name.'\' wurde entfernt.');
+        //$door->delete();
         return redirect(action('DoorController@index'));
     }
 }
