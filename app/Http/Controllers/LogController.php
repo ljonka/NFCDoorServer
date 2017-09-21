@@ -17,9 +17,13 @@ class LogController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        return view('logs.index', ['elements' => Log::all()]);
+        if ($request->is('api/*')) {
+          return ['elements' => Log::all()];
+        }else{
+          return view('logs.index', ['elements' => Log::all()]);
+        }
     }
 
     /**
