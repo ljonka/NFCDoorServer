@@ -23,7 +23,11 @@ class DoorController extends Controller
      */
     public function index(Request $request)
     {
+      if ($request->is('api/*')) {
+        return ['elements' => Door::all()];
+      }else{
         return view('doors.index', ['elements' => Door::all()]);
+      }
     }
 
     /**
@@ -61,9 +65,13 @@ class DoorController extends Controller
      * @param  \App\Door  $door
      * @return \Illuminate\Http\Response
      */
-    public function show(Door $door)
+    public function show(Request $request, Door $door)
     {
+      if ($request->is('api/*')) {
+        return ['door' => $door];
+      }else{
         return view('doors.show', ['door' => $door]);
+      }
     }
 
     /**

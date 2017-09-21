@@ -23,7 +23,7 @@ class DoorUserController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
         //lookup unassigned uuid's in log
         $logs = DB::table('logs')
@@ -33,10 +33,18 @@ class DoorUserController extends Controller
             ->leftJoin('door_users', 'logs.chip_uuid', '=', 'door_users.chip_uuid')
             ->whereNull('door_users.chip_uuid')
             ->get();
-        return view('doorUsers.index', [
-          'elements' => DoorUser::all(),
-          'logs' => $logs
-        ]);
+
+        if ($request->is('api/*')) {
+          return [
+            'elements' => DoorUser::all(),
+            'logs' => $logs
+          ];
+        }else{
+          return view('doorUsers.index', [
+            'elements' => DoorUser::all(),
+            'logs' => $logs
+          ]);
+        }
     }
 
     /**
@@ -97,11 +105,21 @@ class DoorUserController extends Controller
      * @param  \App\DoorUser  $doorUser
      * @return \Illuminate\Http\Response
      */
-    public function show(DoorUser $doorUser)
+    public function show(Request $request, DoorUser $doorUser)
     {
         $grants = DoorUserGrant::where('door_user', '=', $doorUser->id)->get();
 
-        return view('doorUsers.show', ['doorUser' => $doorUser, 'grants' => $grants]);
+        if ($request->is('api/*')) {
+          return [
+            'doorUser' => $doorUser,
+            'grants' => $grants
+          ];
+        }else{
+          return view('doorUsers.show', [
+            'doorUser' => $doorUser,
+            'grants' => $grants
+          ]);
+        }
     }
 
     /**
