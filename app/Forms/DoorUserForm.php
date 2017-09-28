@@ -35,7 +35,7 @@ class DoorUserForm extends Form
           'multiple' => true
         ]);
         $this
-            ->add('chip_uuid', 'text', ['rules' => 'required', 'attr' => ['disabled' => true]])
+            ->add('chip_uuid', 'text', ['rules' => 'required', 'attr' => ['readonly' => true]])
             ->add('name', 'text', ['rules' => 'required'])
             ->add('phone', 'text', ['rules' => 'required'])
             ->add('email', 'email', ['rules' => 'required'])
