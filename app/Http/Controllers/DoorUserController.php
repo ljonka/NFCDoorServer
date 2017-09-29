@@ -95,8 +95,12 @@ class DoorUserController extends Controller
         }
       }
 
-      $request->session()->flash('status', '\''.$person->name.'\' wurde hinzugefügt.');
-      return redirect(action('DoorUserController@show', $person->id));
+      //$request->session()->flash('status', '\''.$person->name.'\' wurde hinzugefügt.');
+      if ($request->is('api/*')) {
+        return ["person" => $person];
+      }else{
+        return redirect(action('DoorUserController@show', $person->id));
+      }
     }
 
     /**
@@ -173,8 +177,12 @@ class DoorUserController extends Controller
           }
         }
 
-      $request->session()->flash('status', '\''.$doorUser->name.'\' wurde aktualisiert.');
-      return redirect(action('DoorUserController@show', $doorUser->id));
+      //$request->session()->flash('status', '\''.$doorUser->name.'\' wurde aktualisiert.');
+      if ($request->is('api/*')) {
+        return ["person" => $doorUser];
+      }else{
+        return redirect(action('DoorUserController@show', $doorUser->id));
+      }
     }
 
     /**
@@ -185,12 +193,16 @@ class DoorUserController extends Controller
      */
     public function destroy(Request $request, DoorUser $doorUser)
     {
-      $request->session()->flash('status', '\''.$doorUser->name.'\' wurde entfernt.');
+      //$request->session()->flash('status', '\''.$doorUser->name.'\' wurde entfernt.');
       $grants = DoorUserGrant::where('door_user', '=', $doorUser->id)->get();
       foreach($grants as $grant){
         $grant->delete();
       }
       $doorUser->delete();
-      return redirect(action('DoorUserController@index'));
+      if ($request->is('api/*')) {
+        return ["personRemoved" => true];
+      }else{
+        return redirect(action('DoorUserController@index'));
+      }
     }
 }

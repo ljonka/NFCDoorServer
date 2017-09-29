@@ -18,8 +18,8 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 });
 
 Route::group(['middleware' => ['auth:api']], function () {
-    Route::resource('doors', 'DoorController');
-    Route::resource('doorUsers', 'DoorUserController');
-    Route::resource('doorUserGrants', 'DoorUserGrantController');
-    Route::resource('logs', 'LogController');
+    Route::apiResource('doors', 'DoorController');
+    Route::apiResource('doorUsers', 'DoorUserController');
+    Route::apiResource('doorUserGrants', 'DoorUserGrantController');
+    Route::apiResource('logs', 'LogController');
 });

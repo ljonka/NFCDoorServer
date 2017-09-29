@@ -55,8 +55,12 @@ class DoorController extends Controller
         $door = new Door($request->all());
         $door->api_key = $request->user()->createToken($door->name)->accessToken;
         $door->save();
-        $request->session()->flash('status', 'Tür \''.$door->name.'\' wurde hinzugefügt.');
-        return redirect(action('DoorController@show', $door->id));
+        //$request->session()->flash('status', 'Tür \''.$door->name.'\' wurde hinzugefügt.');
+        if ($request->is('api/*')) {
+          return ["door" => $door];
+        }else{
+          return redirect(action('DoorController@show', $door->id));
+        }
     }
 
     /**
@@ -101,8 +105,12 @@ class DoorController extends Controller
     {
         $door->fill($request->all());
         $door->save();
-        $request->session()->flash('status', '\''.$door->name.'\' wurde aktualisiert.');
-        return redirect(action('DoorController@show', $door->id));
+        //$request->session()->flash('status', '\''.$door->name.'\' wurde aktualisiert.');
+        if ($request->is('api/*')) {
+          return ["door" => $door];
+        }else{
+          return redirect(action('DoorController@show', $door->id));
+        }
     }
 
     /**
